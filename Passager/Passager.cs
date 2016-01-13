@@ -35,13 +35,10 @@ public class PassagerException : Exception {
 }
 public class PassagerException<TValue> : Exception {
   public PassagerException(TValue value, Expression<Predicate<TValue>> test, string message, params object[] parameters)
-    : base(string.Format("Value <{0}> didn't pass validation {1}" + message, value, Regex.Split(test + "", "=>")[1].Trim(), parameters)) {
-  }
-  public PassagerException(Expression<Func<bool>> test, string message, params object[] parameters)
-    : base(string.Format("Validation <{0}> failed" + message, Regex.Split(test + "", "=>")[1].Trim(), parameters)) {
+    : base(string.Format("Value <{0}> didn't pass validation {1}" + message, value, test.Body, parameters)) {
   }
   public PassagerException(Expression<Func<TValue>> getter, TValue value, Expression<Predicate<TValue>> test, string message, params object[] parameters)
-    : base(string.Format("Parameter {0}<{1}> didn't pass validation {2}" + message, GetParameterName(getter), value, Regex.Split(test + "", "=>")[1].Trim(), parameters)) {
+    : base(string.Format("Parameter {0}<{1}> didn't pass validation {2}" + message, GetParameterName(getter), value, test.Body, parameters)) {
   }
   private static string GetParameterName(Expression reference) {
     var lambda = reference as LambdaExpression;
@@ -61,9 +58,6 @@ public static class Passager {
   }
   public static T ThrowIf<T>(this T v, Expression<Predicate<T>> test) {
     return ThrowIfImpl(v, test, "");
-  }
-  public static T ThrowIf<T>(this T v, Expression<Predicate<T>> test, string message = "", params object[] parameters) {
-    return ThrowIfImpl(v, test, message, parameters);
   }
   static T ThrowIfImpl<T>(T v, Expression<Predicate<T>> test, string message, params object[] parameters) {
     if (test.Compile()(v))
