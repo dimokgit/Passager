@@ -57,5 +57,20 @@ namespace Tests {
         throw;
       }
     }
+    [TestMethod()]
+    [ExpectedException(typeof(PassagerException))]
+    public void ThrowIfPassthrough() {
+      var s = "";
+      try {
+        var sw = Stopwatch.StartNew();
+        Assert.AreEqual("", Passager.ThrowIf(s, () => s != ""));
+        Console.WriteLine(new { sw.ElapsedMilliseconds });
+        Passager.ThrowIf(s, () => string.IsNullOrEmpty(s));
+      } catch (PassagerException exc) {
+        Console.WriteLine(exc.Message);
+        Assert.IsTrue(exc.Message.Contains("IsNullOrEmpty"));
+        throw;
+      }
+    }
   }
 }

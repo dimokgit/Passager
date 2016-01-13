@@ -59,6 +59,11 @@ public static class Passager {
   public static T ThrowIf<T>(this T v, Expression<Predicate<T>> test) {
     return ThrowIfImpl(v, test, "");
   }
+  public static T ThrowIf<T>(this T v, Expression<Func<bool>> test,string message="",params object[] parameters) {
+    if (test.Compile()())
+      throw new PassagerException(test, message, parameters);
+    return v;
+  }
   static T ThrowIfImpl<T>(T v, Expression<Predicate<T>> test, string message, params object[] parameters) {
     if (test.Compile()(v))
       throw new PassagerException<T>(v, test, message, parameters);
