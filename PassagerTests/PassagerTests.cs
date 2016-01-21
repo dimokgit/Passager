@@ -32,10 +32,10 @@ namespace Tests {
         var sw = Stopwatch.StartNew();
         Assert.AreEqual(0, Passager.ThrowIf(() => i, v => v > 0));
         Console.WriteLine(new { sw.ElapsedMilliseconds });
-        Assert.AreEqual(0, Passager.ThrowIf(() => i, v => v == 0));
+        Passager.ThrowIf(() => i, v => v == 0, " Value={0}", new { i, d = "dimok" });
       } catch (PassagerException<int> exc) {
         Console.WriteLine(exc.Message);
-        Assert.IsTrue(exc.Message.Contains("v == 0"));
+        Assert.AreEqual("Parameter i<0> didn't pass validation (v == 0) Value={ i = 0, d = dimok }", exc.Message);
         throw;
       }
     }
@@ -52,6 +52,20 @@ namespace Tests {
         Console.WriteLine(new { sw.ElapsedMilliseconds });
         Passager.ThrowIf(() => string.IsNullOrEmpty(s));
       } catch (PassagerException exc) {
+        Console.WriteLine(exc.Message);
+        Assert.IsTrue(exc.Message.Contains("IsNullOrEmpty"));
+        throw;
+      }
+    }
+    [TestMethod()]
+    [ExpectedException(typeof(PassagerException))]
+    public void ThrowIfComplex() {
+      var s = new[] { "" };
+      var sw = Stopwatch.StartNew();
+      try {
+        Passager.ThrowIf(() => s.Any());
+      } catch (PassagerException exc) {
+        Console.WriteLine(new { sw.ElapsedMilliseconds });
         Console.WriteLine(exc.Message);
         Assert.IsTrue(exc.Message.Contains("IsNullOrEmpty"));
         throw;
