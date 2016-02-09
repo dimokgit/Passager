@@ -59,6 +59,9 @@ public static class Passager {
       throw new PassagerException<T>(getter, r, test, message, parameters);
     return r;
   }
+  public static T ThrowIf<T>(this T v, Expression<Predicate<T>> test, string message = "", params object[] parameters) {
+    return ThrowIfImpl(v, test, message, parameters);
+  }
   public static T ThrowIf<T>(this T v, Expression<Predicate<T>> test) {
     return ThrowIfImpl(v, test, "");
   }
