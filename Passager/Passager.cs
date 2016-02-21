@@ -9,7 +9,8 @@ using System.Threading.Tasks;
 
 public class PassagerException : Exception {
   public PassagerException(Expression<Func<bool>> test, string message, params object[] parameters)
-    : base(string.Format("Validation {{{0}}} failed" + message, TestBody(test), parameters)) {
+    : base(string.Format("Validation {{{0}}} failed" + message
+      , new object[] { TestBody(test) }.Concat(parameters).ToArray())) {
   }
   private static string TestBody(Expression<Func<bool>> test) {
     List<MemberInfo> members = new List<MemberInfo>();

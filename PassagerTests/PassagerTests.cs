@@ -5,7 +5,6 @@ using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-
 namespace Tests {
   [TestClass()]
   public class PassagerTests {
@@ -63,7 +62,7 @@ namespace Tests {
       var s = new[] { "" };
       var sw = Stopwatch.StartNew();
       try {
-        Passager.ThrowIf(() => s.Any());
+        Passager.ThrowIf(() => s.Any(), ".{1}", new { s = s[0] });
       } catch (PassagerException exc) {
         Console.WriteLine(new { sw.ElapsedMilliseconds });
         Console.WriteLine(exc.Message);
