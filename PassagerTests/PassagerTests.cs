@@ -62,11 +62,11 @@ namespace Tests {
       var s = new[] { "" };
       var sw = Stopwatch.StartNew();
       try {
-        Passager.ThrowIf(() => s.Any(), ".{1}", new { s = s[0] });
+        Passager.ThrowIf(() => s.Any(), ".{0}", new { s = s[0] });
       } catch (PassagerException exc) {
         Console.WriteLine(new { sw.ElapsedMilliseconds });
         Console.WriteLine(exc.Message);
-        Assert.IsTrue(exc.Message.Contains("IsNullOrEmpty"));
+        Assert.IsTrue(exc.Message.Contains("Any"));
         throw;
       }
     }
