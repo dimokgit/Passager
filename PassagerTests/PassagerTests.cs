@@ -34,7 +34,7 @@ namespace Tests {
         Passager.ThrowIf(() => i, v => v == 0, " Value={0}", new { i, d = "dimok" });
       } catch (PassagerException<int> exc) {
         Console.WriteLine(exc.Message);
-        Assert.AreEqual("Parameter i<0> didn't pass validation (v == 0) Value={ i = 0, d = dimok }", exc.Message);
+        Assert.AreEqual("Parameter i<0> triggered error condition (v == 0) Value={ i = 0, d = dimok }", exc.Message);
         throw;
       }
     }
