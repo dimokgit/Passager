@@ -35,12 +35,12 @@ public class PassagerException : Exception {
 }
 public class PassagerException<TValue> : Exception {
   public PassagerException(TValue value, Expression<Predicate<TValue>> test, string message, params object[] parameters)
-    : base(string.Format("Value <{0}> didn't pass validation {1}" + message, value, test.Body)
+    : base(string.Format("Value <{0}> triggered error condition {1}", value, test.Body)
         + (parameters.Any() ? string.Format(message, parameters) : message)) {
   }
   public PassagerException(Expression<Func<TValue>> getter, TValue value, Expression<Predicate<TValue>> test, string message, params object[] parameters)
     : base(
-      string.Format("Parameter {0}<{1}> didn't pass validation {2}", GetParameterName(getter), value, test.Body)
+      string.Format("Parameter {0}<{1}> triggered error condition {2}", GetParameterName(getter), value, test.Body)
         + (parameters.Any() ? string.Format(message, parameters) : message)) {
   }
   private static string GetParameterName(Expression reference) {

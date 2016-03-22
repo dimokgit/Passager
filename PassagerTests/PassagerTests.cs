@@ -85,5 +85,20 @@ namespace Tests {
         throw;
       }
     }
+    [TestMethod()]
+    [ExpectedException(typeof(PassagerException<string>))]
+    public void ThrowIfExtension() {
+      var s = "aaa";
+      try {
+        var sw = Stopwatch.StartNew();
+        s.ThrowIf(str=> str != "bbb");
+        Console.WriteLine(new { sw.ElapsedMilliseconds });
+      } catch (PassagerException<string> exc) {
+        Console.WriteLine(exc.Message);
+        Assert.IsTrue(exc.Message.Contains("aaa"));
+        Assert.IsTrue(exc.Message.Contains("bbb"));
+        throw;
+      }
+    }
   }
 }
