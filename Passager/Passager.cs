@@ -8,6 +8,9 @@ using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 
 public class PassagerException : Exception {
+  public PassagerException(Expression<Func<bool>> test, string message)
+    : base($"Validation {TestBody(test)} failed. {message}") {
+  }
   public PassagerException(Expression<Func<bool>> test, string message, params object[] parameters)
     : base(string.Format("Validation {{{0}}} failed", TestBody(test)) + string.Format(message, parameters)) {
   }
@@ -35,12 +38,19 @@ public class PassagerException : Exception {
 }
 public class PassagerException<TValue> : Exception {
   public PassagerException(TValue value, Expression<Predicate<TValue>> test, string message, params object[] parameters)
-    : base(string.Format("Value <{0}> triggered error condition {1}", value, test.Body)
-        + (parameters.Any() ? string.Format(message, parameters) : message)) {
+    : base(BuildMessage(value, test, message, parameters)) {
   }
+
+  private static string BuildMessage(TValue value, Expression<Predicate<TValue>> test, string message, params object[] parameters) {
+    var msg = $"Value <{value}> triggered error condition {test.Body}";
+    return msg + (parameters.Any()
+      ? (parameters.Any() ? string.Format(message, parameters) : message)
+      : "");
+  }
+
   public PassagerException(Expression<Func<TValue>> getter, TValue value, Expression<Predicate<TValue>> test, string message, params object[] parameters)
     : base(
-      string.Format("Parameter {0}<{1}> triggered error condition {2}", GetParameterName(getter), value, test.Body)
+      string.Format("Parameter [{0}]<{1}> triggered error condition {2}.", GetParameterName(getter), value, test.Body)
         + (parameters.Any() ? string.Format(message, parameters) : message)) {
   }
   private static string GetParameterName(Expression reference) {
@@ -65,7 +75,7 @@ public static class Passager {
   public static T ThrowIf<T>(this T v, Expression<Predicate<T>> test) {
     return ThrowIfImpl(v, test, "");
   }
-  public static T ThrowIf<T>(this T v, Expression<Func<bool>> test,string message="",params object[] parameters) {
+  public static T ThrowIf<T>(this T v, Expression<Func<bool>> test, string message = "", params object[] parameters) {
     if (test.Compile()())
       throw new PassagerException(test, message, parameters);
     return v;
@@ -78,5 +88,9 @@ public static class Passager {
   public static void ThrowIf(Expression<Func<bool>> test, string message = "", params object[] parameters) {
     if (test.Compile()())
       throw new PassagerException(test, message, parameters);
+  }
+  public static void ThrowIf(Expression<Func<bool>> test, string message = "") {
+    if (test.Compile()())
+      throw new PassagerException(test, message);
   }
 }

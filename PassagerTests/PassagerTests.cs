@@ -25,7 +25,7 @@ namespace Tests {
     }
     [TestMethod()]
     [ExpectedException(typeof(PassagerException<int>))]
-    public void ThrowIfWithReference() {
+    public void ThrowIfWithReferenceFormatted() {
       var i = 0;
       try {
         var sw = Stopwatch.StartNew();
@@ -34,10 +34,26 @@ namespace Tests {
         Passager.ThrowIf(() => i, v => v == 0, " Value={0}", new { i, d = "dimok" });
       } catch (PassagerException<int> exc) {
         Console.WriteLine(exc.Message);
-        Assert.AreEqual("Parameter i<0> triggered error condition (v == 0) Value={ i = 0, d = dimok }", exc.Message);
+        Assert.AreEqual("Parameter [i]<0> triggered error condition (v == 0). Value={ i = 0, d = dimok }", exc.Message);
         throw;
       }
     }
+    [TestMethod()]
+    [ExpectedException(typeof(PassagerException<int>))]
+    public void ThrowIfWithReference() {
+      var i = 0;
+      try {
+        var sw = Stopwatch.StartNew();
+        Assert.AreEqual(0, Passager.ThrowIf(() => i, v => v > 0));
+        Console.WriteLine(new { sw.ElapsedMilliseconds });
+        Passager.ThrowIf(() => i, v => v == 0, $" Value={new { i, d = "dimok" }}");
+      } catch (PassagerException<int> exc) {
+        Console.WriteLine(exc.Message);
+        Assert.AreEqual("Parameter [i]<0> triggered error condition (v == 0). Value={ i = 0, d = dimok }", exc.Message);
+        throw;
+      }
+    }
+
     [TestMethod()]
     [ExpectedException(typeof(PassagerException))]
     public void ThrowIfNotValid() {
